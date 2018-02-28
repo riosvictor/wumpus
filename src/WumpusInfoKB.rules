@@ -1,0 +1,105 @@
+import ws.Perceptions;
+
+/**
+ * Wumpus Agents Knowledge Base.
+ *
+ * @author   Marco Antonio Costa Simoes <a href="mailto:macs3@cin.ufpe.br">msimoes@uneb.br</a>
+ * @version  1.0, Junho 2005.
+ *
+ * Aqui temos a descrição das regras da base deconhecimento dos agentes do Mundo do Wumpus.
+ */
+public ruleBase WumpusInfoKB {
+	rule anda{
+      	declarations
+			Perceptions p;
+			WumpusMonster m;
+			
+		conditions
+			!p.getWall();		
+			 m.planIsEmpty();	
+
+		actions		
+			m.anda();	
+			modified(m);
+			}
+
+	rule verificarMorteExplorador{
+		declarations
+			Perceptions p;
+			WumpusMonster w;
+
+		conditions	
+		      p.getExplorerScream();  	            
+			w.planIsEmpty();			
+
+		actions			
+			w.doNothing();			
+			modified(w);
+	}
+     rule cima{
+		declarations
+			Perceptions p;
+			WumpusMonster w;
+		conditions	
+	            w.getRow() == 1;
+			w.planIsEmpty();			
+                 
+		actions			
+			w.moveUp(w.getDirection());		
+			modified(w);
+	}
+
+      rule baixo{
+		declarations
+			Perceptions p;
+			WumpusMonster w;
+		conditions	
+	            w.getRow() == 7;
+			w.planIsEmpty();			
+                 
+		actions			
+			w.moveDown(w.getDirection());		
+			modified(w);
+	}
+        rule esquerda{
+		declarations
+			Perceptions p;
+			WumpusMonster w;
+		conditions	
+	            w.getColumn() == 7;
+			w.planIsEmpty();			
+                 
+		actions	
+			w.moveDown(w.getDirection());		
+			w.moveLeft(w.getDirection());		
+			modified(w);
+	}
+      rule direita{
+		declarations
+			Perceptions p;
+			WumpusMonster w;
+		conditions	
+	            w.getColumn() == 0;
+			w.planIsEmpty();			
+                  
+		actions			
+			w.moveUp(w.getDirection());			
+			w.moveRight(w.getDirection());		
+			modified(w);
+	}
+   rule ataque{
+   		declarations
+			Perceptions p;
+			WumpusMonster w;
+		conditions	
+	            p.getParfum();
+			w.planIsEmpty();			         
+		actions			
+			w.moveUp(w.getDirection());			
+			w.moveRight(w.getDirection());
+			w.moveDown(w.getDirection());
+			w.moveRight(w.getDirection());
+			modified(w);
+	}
+
+}

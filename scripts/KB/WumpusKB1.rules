@@ -1,0 +1,514 @@
+import ws.Perceptions;
+
+/**
+ * Wumpus Agents Knowledge Base.
+ *
+ * @author   Marco Antonio Costa Simoes <a href="mailto:msimoes@uneb.br">msimoes@uneb.br</a>
+ * @version  1.0, 2012.
+ *
+ * Aqui temos a descri��o das regras da base deconhecimento dos agentes do Mundo do Wumpus.
+ */
+public ruleBase WumpusKB {	
+
+    /*rule NOME REGRA{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            CONDIÇÕES
+        actions		
+            AÇÕES
+            modified(e);
+    }*/
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/*rule andaNovoRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+//            !p.getBreeze();
+            !e.rVisited();            
+            e.getColumn()<8;
+            !e.getHasGold();            
+            e.dir();
+        actions		            
+            e.moveRight(e.getDirection());	
+            e.setVizSegura();
+            e.setVisited();
+            modified(e);
+    }
+
+    rule turnLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.dir();
+            e.getColumn()==8;
+            !e.getHasGold();
+//            e.uSeg();
+        actions		    
+            e.moveUp(e.getDirection());                                
+            modified(e);
+    }
+
+    rule andaNovoLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+//            !p.getBreeze();
+            !e.lVisited();  
+            !e.getHasGold();                      
+            e.getColumn()<8;
+//            !e.dir();
+        actions		
+            e.moveLeft(e.getDirection());	            
+            e.setVizSegura();
+            e.setVisited();
+            modified(e);
+    }
+
+    rule turnRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getColumn()==0;
+            e.getRow()!=0;
+            !e.getHasGold();
+            !e.dir();
+            e.uSeg();
+        actions		                        
+            e.moveUp(e.getDirection());                                
+            modified(e);
+    }
+
+*/
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//FUGINDO
+
+    rule fogeRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getColumn() < 4;
+            e.rSeg();
+        actions		
+            e.moveRight(e.getDirection());	
+            e.moveRight(e.getDirection());	
+            modified(e);
+    }
+
+    rule fogeUp{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getRow() < 4;
+            e.uSeg();
+        actions		
+            e.moveUp(e.getDirection());	
+            e.moveUp(e.getDirection());	
+            modified(e);
+    }
+
+    rule fogeLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getColumn() > 4;
+            e.lSeg();
+        actions		
+            e.moveLeft(e.getDirection());	            
+            e.moveLeft(e.getDirection());	            
+            modified(e);
+    }
+
+    rule fogeDown{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getRow() > 4;
+            e.dSeg();
+        actions		
+            e.moveDown(e.getDirection());	
+            e.moveDown(e.getDirection());	
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////PEGANDO OURO
+
+    rule pegaGold{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getGlitter();
+        actions		            
+            e.getGold();
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////SAINDO
+
+    rule sairJogo{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getRow() == 0;
+            e.getColumn() == 0;
+            e.getHasGold();
+        actions		
+            e.leave();
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////VIRANDO
+
+    rule turnLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.dir();
+            e.getColumn()==8;
+            !e.getHasGold();
+            e.uSeg();
+        actions		    
+            e.setVizSegura();
+            e.setVisited();
+            e.moveUp(e.getDirection());                                
+            modified(e);
+    }
+
+    rule turnRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getColumn()==0;
+            e.getRow()!=0;
+            !e.getHasGold();
+            !e.dir();
+            e.uSeg();
+        actions		   
+            e.setVizSegura();
+            e.setVisited();
+            e.moveUp(e.getDirection());                                
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////ANDAR SEM OURO - CASAS SEGURAS E NOVAS
+
+    rule sobeVolta{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.visited();  
+            !e.getHasGold();                      
+//            !e.dir();            
+        actions		
+            e.setVizSegura();
+            e.setVisited();
+            e.moveUp(e.getDirection());	                        
+            modified(e);
+    }
+
+
+    rule andaNovoRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            !e.rVisited();            
+            e.getColumn()<8;
+            !e.getHasGold();            
+            e.dir();
+        actions		            
+            e.setVizSegura();
+            e.setVisited();
+            e.moveRight(e.getDirection());	            
+            modified(e);
+    }
+
+    rule andaNovoLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            !e.lVisited();  
+            !e.getHasGold();                      
+            e.getColumn()>0;
+//            !e.dir();
+        actions		
+            e.setVizSegura();
+            e.setVisited();
+            e.moveLeft(e.getDirection());	                        
+            modified(e);
+    }
+
+    rule andaVelhoLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.lVisited();  
+            !e.getHasGold();                      
+            e.getColumn()<8;
+//            !e.dir();
+            !e.uSeg();
+        actions		
+            e.moveLeft(e.getDirection());	            
+            e.setVizSegura();
+            e.setVisited();
+            modified(e);
+    }
+
+
+/*
+
+
+
+    rule andaNovoUp{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+//            !p.getBreeze();
+            !e.uVisited();            
+            !e.getHasGold();
+        actions		
+            e.moveUp(e.getDirection());	            
+            e.setVizSegura();
+            e.setVisited();
+            modified(e);
+    }
+
+    rule andaNovoDown{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+//            !p.getBreeze();
+            !e.dVisited();  
+            !e.getHasGold();          
+        actions		
+            e.moveDown(e.getDirection());	
+            e.setVizSegura();
+            e.setVisited();
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////ANDAR SEM OURO - CASAS SEGURAS E VISITADAS
+
+    rule andaOldRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.rVisited();   
+            !e.getHasGold();                     
+            e.dir();
+        actions		            
+            e.moveRight(e.getDirection());	
+            e.setVizSegura();            
+            modified(e);
+    }
+    
+    rule andaOldLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.lVisited();   
+            !e.getHasGold();                     
+            e.dir();
+        actions		
+            e.moveLeft(e.getDirection());	            
+            e.setVizSegura();            
+            modified(e);
+    }
+
+    rule andaOldUp{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.uVisited();   
+            !e.getHasGold();         
+        actions		
+            e.moveUp(e.getDirection());	            
+            e.setVizSegura();            
+            modified(e);
+    }
+
+    rule andaOldDown{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.dVisited();   
+            !e.getHasGold();         
+        actions		
+            e.moveDown(e.getDirection());	
+            e.setVizSegura();            
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////SAINDO DOS CANTOS
+
+
+    rule toUp{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getRow()==0;
+        actions		                        
+            e.moveUp(e.getDirection());
+            modified(e);
+    }
+
+    rule toDown{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getRow()==8;
+        actions		                        
+            e.moveDown(e.getDirection());
+            modified(e);
+    }
+
+    rule toLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getColumn()==8;
+        actions		                        
+            e.moveLeft(e.getDirection());
+            modified(e);
+    }
+
+    rule toRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions            
+            e.getColumn()==0;
+        actions		                        
+            e.moveRight(e.getDirection());
+            modified(e);
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////CASAS INSEGURAS E NOVAS
+
+    rule brisa{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getBreeze();            
+        actions		                        
+            e.moveProb();
+            e.haBrisa();
+            modified(e);
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////ANDAR COM OURO - CASAS SEGURAS
+
+    rule andaGoldRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();   
+            e.getHasGold();                        
+        actions		            
+            e.moveRight(e.getDirection());	     
+            modified(e);
+    }
+
+    rule andaGoldLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();   
+            e.getHasGold();                        
+        actions		
+            e.moveLeft(e.getDirection());	                        
+            modified(e);
+    }
+
+    rule andaGoldUp{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();   
+            e.getHasGold();                        
+        actions		
+            e.moveUp(e.getDirection());	            
+            modified(e);
+    }
+
+    rule andaGoldDown{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();   
+            e.getHasGold();                        
+        actions		
+            e.moveDown(e.getDirection());	
+            modified(e);
+    }
+*/
+
+
+}

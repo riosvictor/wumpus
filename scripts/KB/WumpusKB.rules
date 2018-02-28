@@ -1,0 +1,380 @@
+import ws.Perceptions;
+
+/**
+ * Wumpus Agents Knowledge Base.
+ *
+ * @author   Marco Antonio Costa Simoes <a href="mailto:msimoes@uneb.br">msimoes@uneb.br</a>
+ * @version  1.0, 2012.
+ *
+ * Aqui temos a descri��o das regras da base deconhecimento dos agentes do Mundo do Wumpus.
+ */
+public ruleBase WumpusKB {	
+
+    /*rule NOME REGRA{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            CONDIÇÕES
+        actions		
+            AÇÕES
+            modified(e);
+    }*/
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//FUGINDO
+
+    rule fogeRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getColumn() < 4;
+//            e.rSeg();
+        actions		
+            e.moveRight(e.getDirection());	
+            e.moveRight(e.getDirection());	
+            modified(e);
+    }
+
+    rule fogeUp{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getRow() < 4;
+//            e.uSeg();
+        actions		
+            e.moveUp(e.getDirection());	
+            e.moveUp(e.getDirection());	
+            modified(e);
+    }
+
+    rule fogeLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getColumn() > 4;
+//            e.lSeg();
+        actions		
+            e.moveLeft(e.getDirection());	            
+            e.moveLeft(e.getDirection());	            
+            modified(e);
+    }
+
+    rule fogeDown{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getStench();
+            e.getRow() > 4;
+//            e.dSeg();
+        actions		
+            e.moveDown(e.getDirection());	
+            e.moveDown(e.getDirection());	
+            modified(e);
+    }
+*/
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////PEGANDO OURO
+
+    rule pegaGold{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getGlitter();
+        actions		            
+            e.getGold();
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+/////SAINDO
+
+    rule sairJogo{
+        declarations
+            WumpusExplorer e;			
+        conditions            
+            e.getRow() == 0;
+            e.getColumn() == 0;
+            e.getHasGold();
+        actions		
+            e.leave();
+            modified(e);
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////DIREITA NOVA
+
+    rule andaNovoRight{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            !e.rVisited();            
+            e.getColumn()<8;
+            !e.getHasGold();            
+            e.planIsEmpty();
+            e.getSentidoIda();
+//            e.dir();
+        actions		                        
+            e.setVizSegura();
+            e.setVisited();
+            e.moveRight(e.getDirection());	
+            modified(e);
+    }
+
+    
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////BRISAS
+
+    rule probabilidade{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getBreeze();            
+            e.planIsEmpty();
+//            !e.getHasGold();            
+//            e.dir();
+        actions		                        
+            e.haBrisa();
+            e.setVisited();            
+            e.moveProb();
+            modified(e);
+    }
+
+
+
+
+
+    rule brisaIda{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getBreeze();            
+            e.planIsEmpty();
+//            !e.getHasGold();            
+            e.getSentidoIda();
+//            e.getContador() < 4;
+//            e.dir();
+        actions		                        
+            e.haBrisa();
+            e.setVisited();
+            e.setSentidoVolta();
+            e.voltarUp();
+            modified(e);
+    }
+
+/*    rule brisaVolta{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getBreeze();            
+            e.planIsEmpty();
+//            !e.getHasGold();            
+            e.getSentidoVolta();
+//            e.dir();
+        actions		                        
+            e.haBrisa();
+            e.setVisited();
+            e.setSentidoIda();
+            e.voltarUp();
+            modified(e);
+    }
+*/
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////SOBE
+
+    rule voltaNaoSobe{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.planIsEmpty();
+            e.uVisited();              
+            !e.getHasGold();                      
+            e.getRow()<8;
+            e.getSentidoVolta();
+            e.lVisited();
+//            !e.dir();
+        actions		
+            e.setVizSegura();
+            e.setVisited();            
+            e.moveLeft(e.getDirection());	                                                
+            modified(e);
+    }
+
+
+
+    rule sobeVolta{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.planIsEmpty();
+            !e.uVisited();              
+            !e.getHasGold();                      
+            e.getRow()<8;
+            e.getSentidoVolta();
+//            e.visited();
+//            !e.dir();
+        actions		
+            e.setVizSegura();
+            e.setVisited();            
+            e.moveUp(e.getDirection());	                                    
+            e.setSentidoIda();
+            modified(e);
+    }
+
+    rule sobeFim{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.getColumn()==8;
+            e.getRow()<8;
+//            e.uSeg();
+            !e.getHasGold();                                  
+            e.planIsEmpty();
+//            !e.dir();
+        actions		
+            e.setVizSegura();
+            e.setVisited();
+            e.moveUp(e.getDirection());	            
+            modified(e);
+    }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////ESQUERDA NOVA
+
+    rule andaNovoLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            e.getSentidoVolta();
+            !p.getBreeze();
+            !e.lVisited();  
+            !e.getHasGold();                      
+            e.getColumn()>0;
+            e.planIsEmpty();
+//            !e.dir();
+//            !e.uSeg();
+        actions		
+            e.setVizSegura();
+            e.setVisited();
+            e.moveLeft(e.getDirection());	            
+            modified(e);
+    }
+
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+//////ESQUERDA ANTIGA
+
+    rule andaVelhoLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.lVisited();  
+            !e.getHasGold();                      
+            e.getColumn()>0;
+            e.planIsEmpty();
+//            !e.dir();
+        actions		
+            e.setVizSegura();
+            e.setVisited();
+            e.moveLeft(e.getDirection());	            
+            modified(e);
+    }
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
+
+
+   rule andaOuroLeft{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            !p.getBreeze();
+            e.getHasGold();                      
+            e.getColumn()>0;
+            e.planIsEmpty();
+//            !e.dir();
+        actions		
+            e.setVizSegura();
+            e.setVisited();
+            e.moveLeft(e.getDirection());	            
+            modified(e);
+    }
+
+        
+    rule brisaVolta{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;			
+        conditions
+            p.getBreeze();            
+            e.planIsEmpty();
+            e.getHasGold();            
+//            e.getSentidoVolta();
+//            e.dir();
+        actions		                        
+            e.haBrisa();
+            e.setVisited();
+            e.setSentidoIda();
+            e.voltarDown();
+            modified(e);
+    }
+
+
+
+
+
+
+
+
+
+}

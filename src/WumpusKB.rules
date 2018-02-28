@@ -1,0 +1,311 @@
+import ws.Perceptions;
+
+/**
+ * Wumpus Agents Knowledge Base.
+ *
+ * @author   Marco Antonio Costa Simoes <a href="mailto:msimoes@uneb.br">msimoes@uneb.br</a>
+ * @version  1.0, 2012.
+ *
+ * Aqui temos a descri��o das regras da base deconhecimento dos agentes do Mundo do Wumpus.
+ */
+
+public ruleBase WumpusKB {
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////    
+    /*
+   rule NOME REGRA{
+	declarations
+            Perceptions p;
+            WumpusExplorer e;
+	conditions
+            CONDICOES
+	actions
+            ACOES
+    } */		
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////    
+
+  rule fugir{
+	declarations
+            Perceptions p;
+            WumpusExplorer e;
+	conditions
+            p.getStench();
+	actions
+            System.out.println("FUGINDO \n");
+            e.run();            
+            modified(e);
+            System.out.println("\n");
+    }			
+
+    rule sair{
+	declarations
+            WumpusExplorer e;
+	conditions
+            e.getHasGold();
+	    e.getMapPosition() == 0;
+	actions            
+            System.out.println("SAINDO COM OURO \n");
+            e.leave();            
+            modified(e);
+            System.out.println("\n");
+    }
+
+			
+    rule pegarOuro{
+	declarations
+            Perceptions p;
+            WumpusExplorer e;	
+	conditions
+            p.getGlitter();            
+	actions
+            System.out.println("PEGANDO OURO \n");
+            e.getGold();
+            modified(e);
+            System.out.println("\n");
+    }
+
+    rule voltar{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;
+	conditions
+            p.getBreeze();	
+            e.existeSalaOkNaoVisitada(e.getMap().getMapa());
+	    !((e.getMapPosition()% e.getColumns()) == 7);
+            !e.getHasGold();
+            e.existeProbPitZero(e.getMapPosition());
+            e.planIsEmpty();
+	actions
+            System.out.println("VOLTANDO DA BRISA \n");
+            e.haBrisa();
+            e.setVisited(e.getMapPosition());            
+            e.irParaPos(e.getMapPosition(), e.probPitZero(e.getMapPosition()));
+            modified(e);            
+            System.out.println("\n");
+    }
+
+
+//////////////////////////////////////////////////////////////////////
+///// SE CASA DIREITA JAH FOI VISITADA
+/// SE CASA DE CIMA AINDA NAO FOI VISITADA
+//  SE CASA DE CIMA ESTIVER DENTRO DO MAPA
+////////////////////////////////////////////////////////////////////
+
+    rule up{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            !p.getBreeze();
+            !e.getHasGold();
+            e.planIsEmpty();
+            e.isVisited(e.getMapPosition()+1);
+            !e.isVisited(e.getMapPosition()+e.getColumns()); 
+            e.inMap(e.getMapPosition()+e.getColumns()); 
+	actions            
+            System.out.println("SUBINDO SEM OURO - CASA NOVA \n");
+            e.moveUp(e.getDirection());
+            e.setVizSegura();            
+            modified(e);            
+            System.out.println("\n");
+    }
+
+//////////////////////////////////////////////////////////////////////
+///// SE CASA DIREITA NAO FOI VISITADA
+/// SE EXISTE POSICOES A DIREITA
+////////////////////////////////////////////////////////////////////
+
+    rule right{
+        declarations
+            Perceptions p;
+            WumpusExplorer e;
+	conditions
+            !e.getHasGold();
+            !p.getBreeze();		
+            e.planIsEmpty();
+            !e.isVisited(e.getMapPosition()+1);
+            e.getColumn() < (e.getColumns()-1);
+	actions		            
+            System.out.println("DIREITA SEM OURO - CASA NOVA \n");
+            e.moveRight(e.getDirection());
+            e.setVisited(e.getMapPosition());
+            e.setVizSegura();            
+            modified(e);            
+            System.out.println("\n");
+    }
+
+//////////////////////////////////////////////////////////////////////
+///// COMO O AGENTE COMECA DO CANTO ESQUERDO NA PRIMEIRA COLUNA, VERIFICA ESTE CASO
+/// SE CASA DE CIMA FOI VISITADA
+//  SE CASA DA DIREITA FOI VISITADA
+////////////////////////////////////////////////////////////////////
+
+    rule left {
+	declarations
+            WumpusExplorer e;
+	conditions
+            !e.getHasGold();
+            !((e.getMapPosition()% e.getColumns()) == 0);
+            e.isVisited(e.getMapPosition()+e.getRows()); 
+            e.isVisited(e.getMapPosition()+1); 
+            e.getContX(e.getMapPosition()) < 15;
+            e.planIsEmpty();
+	actions            
+            System.out.println("ESQUERDA SEM OURO - DEPOIS DE DIREITA E SUBIR \n");
+            e.moveLeft(e.getDirection());
+            System.out.println("Eu tenho o ouro: "+e.getHasGold());
+            modified(e);            
+            System.out.println("\n");
+    }
+
+//////////////////////////////////////////////////////////////////////
+//  ANDAR APENAS PELAS CASAS VISITADAS E SEGURAS
+////////////////////////////////////////////////////////////////////
+
+    rule descerComOuro{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            e.getHasGold();
+            !p.getBreeze();
+            !(e.getMapPosition() == 0);
+            e.isVisited(e.getMapPosition()-e.getColumns()); 
+            e.planIsEmpty();
+	actions            
+            System.out.println("DESCENDO COM OURO - CASAS SEGURAS \n");
+            e.moveDown(e.getDirection());
+            e.setVizSegura();            
+            modified(e);            
+            System.out.println("\n");
+    }
+
+/////////////
+//VAI PARA ESQUERDA CASO NECESSARIO
+
+    rule esquerdaComOuro{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            e.getHasGold();
+            !(e.getMapPosition() == 0);
+            e.isVisited(e.getMapPosition()-1); 
+            e.planIsEmpty();
+	actions            
+            System.out.println("ESQUERDA COM OURO - CASA SEGURA \n");
+            e.moveLeft(e.getDirection());
+            modified(e);            
+            System.out.println("\n");
+    } 
+
+    rule andar{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            !p.getBreeze();
+            !(e.getMapPosition() == 0);
+            e.planIsEmpty();
+            (  -1 != e.menorProbPit(e.getMapPosition()) );
+	actions            
+            System.out.println("ANDANDO - CASAS SEGURAS E DE MENOR PROBABILIDADE \n");
+            e.setVizSegura();
+            e.irParaPos(e.getMapPosition(), e.menorProbPit(e.getMapPosition()));             
+            modified(e);            
+            System.out.println("\n");
+    }
+
+/*
+    rule arriscar{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            !e.existeSalaOkNaoVisitada(e.getMap().getMapa());
+            p.getBreeze();
+            !e.getHasGold();
+            e.planIsEmpty();
+            e.getMenorProbPit(e.getMapPosition())  ==  e.getMenorProbGeral(e.getMap().getMapa());
+	actions            
+            System.out.println("ARRISCANDO - POR TODAS AS CASAS SEGURAS TEREM SIDO VISITADAS \n");
+            e.haBrisa();
+            e.irParaPos(e.getMapPosition(), e.menorProbPit(e.getMapPosition()));		            
+            modified(e);
+            e.imprimirProbViz(e.getMapPosition());
+            System.out.println("\n");
+    }
+
+*/
+
+    rule descerSemOuro{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            !e.existeSalaOkNaoVisitada(e.getMap().getMapa());            
+            !e.getHasGold();
+            e.planIsEmpty();            
+	actions            
+            System.out.println("DESCENDO - SEM OURO \n");
+            e.moveDown(e.getDirection());
+            modified(e);            
+            System.out.println("\n");
+    }
+
+    rule esquerdaSemOuro{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            !e.existeSalaOkNaoVisitada(e.getMap().getMapa());            
+            !e.getHasGold();
+            !(e.getMapPosition() == 0);
+            e.isVisited(e.getMapPosition()-1); 
+            e.planIsEmpty();
+	actions            
+            System.out.println("ESQUERDA - SEM OURO \n");
+            e.moveDown(e.getDirection());
+            modified(e);            
+            System.out.println("\n");
+    }
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////    
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////    
+// CASO NÃO ENTRE EM NEHUMA REGRA
+////////////////////////////////////////////////////////////////////////////////    
+
+    rule regraDefaultComBrisa{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            e.planIsEmpty();
+            p.getBreeze();
+	actions            
+            System.out.println("REGRA PADRÃO - SALA COM BRISA \n");
+            e.haBrisa();
+            e.irParaPos(e.getMapPosition(), e.probPitZero(e.getMapPosition()));
+            modified(e);
+            System.out.println("\n");
+    }
+	
+    rule regraDefault{
+	declarations
+            WumpusExplorer e;
+            Perceptions p;
+	conditions
+            !p.getBreeze();
+            e.planIsEmpty();
+	actions            
+            System.out.print("REGRA PADRÃO - SALA SEM BRISA/SEGURA");
+            e.irParaPos(e.getMapPosition(), e.probPitZero(e.getMapPosition()));
+            e.setVizSegura();
+            modified(e);
+            System.out.println("\n");
+    } 	
+}

@@ -1,0 +1,14 @@
+import ws.Perceptions;
+
+/**
+ * Wumpus Agents Knowledge Base.
+ *
+ * @author   Marco Antonio Costa Simoes <a href="mailto:macs3@cin.ufpe.br">macs3@cin.ufpe.br</a>
+ * @version  1.0, Junho 2005.
+ *
+ * Aqui temos a descrição das regras da base deconhecimento dos agentes do Mundo do Wumpus.
+ */
+public ruleBase WumpusInfoKB {
+
+
+}

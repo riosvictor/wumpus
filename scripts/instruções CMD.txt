@@ -1,0 +1,18 @@
+d:
+
+cd  D:\Documentos\NetBeansProjects\Wumpus\scripts
+
+setenv (OBRIGATORIO)
+
+Comp
+
+CompAgents (OBRIGATORIO CASO MODIFIQUE A BC)
+
+CompWumpus
+
+StartRegistro (OBRIGATORIO)
+
+StartAll 001 (OBRIGATORIO)
+
+
+
